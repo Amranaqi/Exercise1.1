@@ -1,53 +1,42 @@
 import streamlit as st
-import pandas as pd
 
-# Initialize session state for expenses if it doesn't exist
-if 'expenses' not in st.session_state:
-    st.session_state.expenses = []
+st.title("🎬 Movie Ticket Booking System")
 
-# App Header
-st.title("💰 Personal Budget Tracker")
+# Input fields
+customer_name = st.text_input("Enter Customer Name")
 
-# 1. & 2. Input Form
-st.header("Add a New Expense")
+movie_title = st.selectbox(
+    "Select Movie",
+    ["Avengers", "Kung Fu Panda", "Frozen"]
+)
 
-with st.form("expense_form", clear_on_submit=True):
-    date = st.date_input("Date")
-    item = st.text_input("Expense Item")
-    amount_str = st.text_input("Amount Spent (RM)")
-    submit_button = st.form_submit_button("Add Expense")
+show_time = st.selectbox(
+    "Select Show Time",
+    ["10:00 AM", "2:00 PM", "8:00 PM"]
+)
 
-    if submit_button:
-        # 3. Exception Handling for validation
-        try:
-            amount = float(amount_str)
-            if amount < 0:
-                raise ValueError("The amount cannot be negative.")
-            
-            # Save the expense
-            new_expense = {
-                "Date": date,
-                "Expense Item": item,
-                "Amount Spent (RM)": amount
-            }
-            st.session_state.expenses.append(new_expense)
-            st.success(f"✅ Expense '{item}' added successfully!")
-            
-        except ValueError:
-            st.error("⚠️ Please enter a valid positive number for the amount.")
+seat_type = st.radio(
+    "Select Seat Type",
+    ["Standard", "Premium"]
+)
 
-# 4. Display Summary
-st.header("Expense Summary")
+# Button
+if st.button("Book Ticket"):
+    try:
+        # Validation
+        if customer_name.strip() == "":
+            raise ValueError("Customer name cannot be empty!")
 
-if st.session_state.expenses:
-    # Create DataFrame for display
-    df = pd.DataFrame(st.session_state.expenses)
-    
-    # Display the table
-    st.table(df)
-    
-    # Calculate and display total
-    total = df["Amount Spent (RM)"].sum()
-    st.markdown(f"### Total Expenses: RM {total:.2f}")
-else:
-    st.info("No expenses recorded yet.")
+        # Display booking info
+        st.success("✅ Booking Successful!")
+        st.write("### Booking Details")
+        st.write(f"👤 Name: {customer_name}")
+        st.write(f"🎥 Movie: {movie_title}")
+        st.write(f"⏰ Show Time: {show_time}")
+        st.write(f"💺 Seat Type: {seat_type}")
+
+    except ValueError as ve:
+        st.error(f"❌ Error: {ve}")
+    except Exception as e:
+        st.error("❌ Unexpected error occurred!")
+        
